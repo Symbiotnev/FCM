@@ -98,8 +98,8 @@
     <label for="msgBody">Message</label>
     <textarea id="msgBody" placeholder="Write your notification message..."></textarea>
 
-    <label for="msgImage">Image (optional)</label>
-    <input type="file" id="msgImage" accept="image/*" />
+    <label for="msgImage">Image URL (optional)</label>
+    <input type="text" id="msgImage" placeholder="https://..." />
 
     <button id="sendBtn">Send to Everyone</button>
     <div id="sendResult"></div>
@@ -112,12 +112,6 @@
       getToken,
       onMessage,
     } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-messaging.js";
-    import {
-      getStorage,
-      ref,
-      uploadBytes,
-      getDownloadURL,
-    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB3ZasO4mtLExSmFb_tpIWKj59STuG5Q4M",
@@ -135,7 +129,6 @@
 
     const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
-    const storage = getStorage(app);
 
     const statusEl = document.getElementById("status");
     const enableBtn = document.getElementById("enableBtn");
@@ -203,7 +196,7 @@
     sendBtn.addEventListener("click", async () => {
       const title = document.getElementById("msgTitle").value.trim();
       const body = document.getElementById("msgBody").value.trim();
-      const fileInput = document.getElementById("msgImage");
+      const imageUrl = document.getElementById("msgImage").value.trim() || undefined;
 
       if (!title || !body) {
         sendResult.textContent = "Title and message are required.";
@@ -214,14 +207,6 @@
       sendResult.textContent = "Sending...";
 
       try {
-        let imageUrl;
-        const file = fileInput.files[0];
-        if (file) {
-          const imgRef = ref(storage, `broadcast-images/${Date.now()}-${file.name}`);
-          await uploadBytes(imgRef, file);
-          imageUrl = await getDownloadURL(imgRef);
-        }
-
         const res = await fetch(EDGE_FUNCTION_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -233,7 +218,7 @@
         sendResult.textContent = "Sent! Every subscribed device should get it.";
         document.getElementById("msgTitle").value = "";
         document.getElementById("msgBody").value = "";
-        fileInput.value = "";
+        document.getElementById("msgImage").value = "";
       } catch (err) {
         console.error(err);
         sendResult.textContent = "Send failed. Check console.";
