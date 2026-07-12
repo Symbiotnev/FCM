@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FCM Broadcast Demo</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    max-width: 480px;
+    margin: 40px auto;
+    padding: 0 16px;
+    color: #1a1a1a;
+    background: #fafafa;
+  }
+
+  h1 { font-size: 20px; margin-bottom: 4px; }
+
+  p.subtitle {
+    color: #666;
+    font-size: 14px;
+    margin-top: 0;
+    margin-bottom: 24px;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid #e2e2e2;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  #status {
+    font-size: 14px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: #f0f0f0;
+    margin-bottom: 16px;
+  }
+
+  #status.granted { background: #e6f4ea; color: #1e7e34; }
+  #status.denied { background: #fdecea; color: #c62828; }
+
+  button {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    background: #1a1a1a;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  button:disabled { background: #bbb; cursor: not-allowed; }
+
+  input[type="text"], textarea, input[type="file"] {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-family: inherit;
+  }
+
+  textarea { resize: vertical; min-height: 70px; }
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  #composeSection { display: none; }
+
+  #sendResult { font-size: 13px; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+  <h1>Broadcast Notifications</h1>
+  <p class="subtitle">Test push notifications to every subscribed device — no database.</p>
+
+  <div class="card">
+    <div id="status">Notifications not enabled yet.</div>
+    <button id="enableBtn">Allow Notifications</button>
+  </div>
+
+  <div class="card" id="composeSection">
+    <label for="msgTitle">Title</label>
+    <input type="text" id="msgTitle" placeholder="Announcement" />
+
+    <label for="msgBody">Message</label>
+    <textarea id="msgBody" placeholder="Write your notification message..."></textarea>
+
+    <label for="msgImage">Image (optional)</label>
+    <input type="file" id="msgImage" accept="image/*" />
+
+    <button id="sendBtn">Send to Everyone</button>
+    <div id="sendResult"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+    import {
+      getMessaging,
+      getToken,
+      onMessage,
+    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-messaging.js";
+    import {
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL,
+    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB3ZasO4mtLExSmFb_tpIWKj59STuG5Q4M",
+      authDomain: "bernardnjathi1.firebaseapp.com",
+      projectId: "bernardnjathi1",
+      storageBucket: "bernardnjathi1.firebasestorage.app",
+      messagingSenderId: "787031498701",
+      appId: "1:787031498701:web:09bc32d61f031181d7ee84",
+    };
+
+    const EDGE_FUNCTION_URL = "https://ylvkuxmzakpmeauclpwg.supabase.co/functions/v1/super-task";
+
+    // TODO: replace with the VAPID key from Firebase Console > Cloud Messaging > Web Push certificates
+    const VAPID_KEY = "BILoEPINEBD-iuAjmlMnXYtX4IMtPd_XKqm6jHV1aXJkwxO9otmAO_dkGYCZ5IWovPMY8pwXtIQC6uWaKgoG4as";
+
+    const app = initializeApp(firebaseConfig);
+    const messaging = getMessaging(app);
+    const storage = getStorage(app);
+
+    const statusEl = document.getElementById("status");
+    const enableBtn = document.getElementById("enableBtn");
+    const composeSection = document.getElementById("composeSection");
+    const sendBtn = document.getElementById("sendBtn");
+    const sendResult = document.getElementById("sendResult");
+
+    function setStatus(text, cls) {
+      statusEl.textContent = text;
+      statusEl.className = cls || "";
+    }
+
+    async function registerServiceWorkerAndSubscribe() {
+      const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+
+      const token = await getToken(messaging, {
+        vapidKey: VAPID_KEY,
+        serviceWorkerRegistration: registration,
+      });
+
+      if (!token) {
+        setStatus("Could not get a registration token.", "denied");
+        return;
+      }
+
+      const res = await fetch(EDGE_FUNCTION_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "subscribe", token }),
+      });
+
+      if (!res.ok) {
+        setStatus("Got a token, but subscribing failed. Check console.", "denied");
+        console.error(await res.text());
+        return;
+      }
+
+      setStatus("Notifications enabled — this device will receive broadcasts.", "granted");
+      composeSection.style.display = "block";
+      enableBtn.disabled = true;
+    }
+
+    enableBtn.addEventListener("click", async () => {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        setStatus("Permission denied.", "denied");
+        return;
+      }
+      try {
+        await registerServiceWorkerAndSubscribe();
+      } catch (err) {
+        console.error(err);
+        setStatus("Something went wrong. Check console.", "denied");
+      }
+    });
+
+    // Foreground messages (tab open and focused) don't auto-show a system
+    // notification, so we display one manually here.
+    onMessage(messaging, (payload) => {
+      const { title, body, image } = payload.notification || {};
+      new Notification(title || "New notification", { body, icon: image });
+    });
+
+    sendBtn.addEventListener("click", async () => {
+      const title = document.getElementById("msgTitle").value.trim();
+      const body = document.getElementById("msgBody").value.trim();
+      const fileInput = document.getElementById("msgImage");
+
+      if (!title || !body) {
+        sendResult.textContent = "Title and message are required.";
+        return;
+      }
+
+      sendBtn.disabled = true;
+      sendResult.textContent = "Sending...";
+
+      try {
+        let imageUrl;
+        const file = fileInput.files[0];
+        if (file) {
+          const imgRef = ref(storage, `broadcast-images/${Date.now()}-${file.name}`);
+          await uploadBytes(imgRef, file);
+          imageUrl = await getDownloadURL(imgRef);
+        }
+
+        const res = await fetch(EDGE_FUNCTION_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "send", title, body, imageUrl }),
+        });
+
+        if (!res.ok) throw new Error(await res.text());
+
+        sendResult.textContent = "Sent! Every subscribed device should get it.";
+        document.getElementById("msgTitle").value = "";
+        document.getElementById("msgBody").value = "";
+        fileInput.value = "";
+      } catch (err) {
+        console.error(err);
+        sendResult.textContent = "Send failed. Check console.";
+      } finally {
+        sendBtn.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>
