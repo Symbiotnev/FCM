@@ -3,209 +3,570 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>imfuyoteam</title>
+<title>imfuyoteam · Workspace</title>
 <style>
   :root{
-    --bg: #0f1410;
-    --panel: #161d17;
-    --accent: #7fdc8f;
-    --accent-dim: #3f6b48;
-    --text: #eef4ee;
-    --text-dim: #9fb3a3;
-    --border: #243025;
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --ink: #14181f;
+    --ink-dim: #6b7280;
+    --border: #e3e6eb;
+    --accent: #3454d1;
+    --accent-soft: #e8ecfd;
+    --danger: #c4453a;
+    --ok: #1f9d55;
   }
-  *{ box-sizing: border-box; }
-  html, body{
-    margin:0; padding:0; height:100%;
-    background: var(--bg);
-    color: var(--text);
-    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; height:100%; background:var(--bg); color:var(--ink);
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif; }
+
+  /* ---------- LOGIN ---------- */
+  #login-view{
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
   }
-  body{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height:100vh;
-    padding: 24px;
+  .login-card{
+    width:100%; max-width:400px; background:var(--panel); border:1px solid var(--border);
+    border-radius:16px; padding:44px 32px; text-align:center; box-shadow:0 20px 50px rgba(20,24,31,0.08);
   }
-  .card{
-    width:100%;
-    max-width: 420px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 40px 32px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.35);
-    text-align:center;
-  }
-  .brand{
-    font-size: 13px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 28px;
-  }
-  h1{
-    font-size: 22px;
-    margin: 0 0 8px;
-    font-weight: 600;
-  }
-  p.sub{
-    color: var(--text-dim);
-    font-size: 14px;
-    margin: 0 0 28px;
-    line-height: 1.5;
-  }
-  button{
-    font-family: inherit;
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-  }
+  .brand{ font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-dim); margin-bottom:24px; font-weight:600; }
+  .login-card h1{ font-size:22px; margin:0 0 8px; }
+  .login-card p{ color:var(--ink-dim); font-size:14px; line-height:1.5; margin:0 0 28px; }
   #google-btn{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap: 10px;
-    width:100%;
-    padding: 12px 16px;
-    background: #fff;
-    color: #1f1f1f;
-    font-size: 15px;
-    font-weight: 500;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    display:flex; align-items:center; justify-content:center; gap:10px; width:100%;
+    padding:12px 16px; background:var(--ink); color:#fff; font-size:15px; font-weight:500;
+    border:none; border-radius:9px; cursor:pointer; transition:transform .15s ease;
   }
-  #google-btn:hover{
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
-  }
+  #google-btn:hover{ transform:translateY(-1px); }
   #google-btn svg{ width:18px; height:18px; }
+  .scope-note{ margin-top:20px; font-size:12px; color:var(--ink-dim); line-height:1.5; text-align:left;
+    background:var(--accent-soft); border-radius:8px; padding:12px 14px; }
+  #error-msg{ margin-top:16px; font-size:13px; color:var(--danger); display:none; }
 
-  #error-msg{
-    margin-top: 16px;
-    font-size: 13px;
-    color: #e08585;
-    display:none;
+  /* ---------- APP SHELL ---------- */
+  #app-view{ display:none; min-height:100vh; }
+  .shell{ display:flex; min-height:100vh; }
+  nav.sidebar{
+    width:220px; flex-shrink:0; background:var(--panel); border-right:1px solid var(--border);
+    padding:24px 16px; display:flex; flex-direction:column;
   }
-
-  /* dashboard */
-  #dashboard-view{ display:none; }
-  .avatar{
-    width: 76px; height:76px;
-    border-radius: 50%;
-    border: 2px solid var(--accent-dim);
-    object-fit: cover;
-    margin-bottom: 20px;
+  .sidebar .brand{ padding:0 8px; margin-bottom:28px; }
+  .user-chip{ display:flex; align-items:center; gap:10px; padding:8px; border-radius:10px; margin-bottom:20px; }
+  .user-chip img{ width:32px; height:32px; border-radius:50%; }
+  .user-chip .name{ font-size:13px; font-weight:600; line-height:1.2; }
+  .user-chip .email{ font-size:11px; color:var(--ink-dim); }
+  .nav-btn{
+    display:flex; align-items:center; gap:10px; width:100%; text-align:left; padding:10px 12px;
+    border:none; background:transparent; border-radius:8px; font-size:14px; color:var(--ink-dim);
+    cursor:pointer; margin-bottom:2px; font-family:inherit;
   }
-  .greeting{
-    font-size: 24px;
-    font-weight: 600;
-    margin: 0 0 4px;
-  }
-  .greeting span{ color: var(--accent); }
-  .email{
-    color: var(--text-dim);
-    font-size: 14px;
-    margin: 0 0 28px;
-  }
+  .nav-btn:hover{ background:var(--bg); color:var(--ink); }
+  .nav-btn.active{ background:var(--accent-soft); color:var(--accent); font-weight:600; }
+  .sidebar-footer{ margin-top:auto; }
   #signout-btn{
-    padding: 10px 20px;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-size: 14px;
+    width:100%; padding:10px; border:1px solid var(--border); background:transparent; color:var(--ink-dim);
+    border-radius:8px; font-size:13px; cursor:pointer; font-family:inherit;
   }
-  #signout-btn:hover{
-    border-color: var(--accent-dim);
-    color: var(--text);
+  #signout-btn:hover{ border-color:var(--danger); color:var(--danger); }
+
+  main.content{ flex:1; padding:32px 40px; overflow-y:auto; max-height:100vh; }
+  .panel{ display:none; }
+  .panel.active{ display:block; }
+  .panel-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+  .panel-header h2{ margin:0; font-size:20px; }
+  .panel-header .sub{ color:var(--ink-dim); font-size:13px; margin-top:2px; }
+
+  .btn{ font-family:inherit; cursor:pointer; border:none; border-radius:8px; padding:9px 16px; font-size:13px; font-weight:500; }
+  .btn-primary{ background:var(--accent); color:#fff; }
+  .btn-primary:hover{ background:#2a45b0; }
+  .btn-secondary{ background:var(--panel); border:1px solid var(--border); color:var(--ink); }
+  .btn-secondary:hover{ border-color:var(--accent); }
+
+  .card{ background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:16px; }
+  .card h3{ margin:0 0 14px; font-size:14px; }
+
+  .row{ display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+  input, textarea{
+    font-family:inherit; font-size:13px; padding:9px 11px; border:1px solid var(--border);
+    border-radius:7px; background:var(--bg); color:var(--ink); flex:1; min-width:160px;
   }
-  .hidden{ display:none !important; }
+  textarea{ min-height:90px; resize:vertical; width:100%; }
+  input:focus, textarea:focus{ outline:2px solid var(--accent-soft); border-color:var(--accent); }
+
+  .list-item{ padding:12px 0; border-bottom:1px solid var(--border); font-size:13px; }
+  .list-item:last-child{ border-bottom:none; }
+  .list-item .title{ font-weight:600; margin-bottom:2px; }
+  .list-item .meta{ color:var(--ink-dim); font-size:12px; }
+  .empty{ color:var(--ink-dim); font-size:13px; padding:16px 0; text-align:center; }
+  .status-msg{ font-size:12px; margin-top:8px; display:none; }
+  .status-msg.ok{ color:var(--ok); }
+  .status-msg.err{ color:var(--danger); }
+  .token-banner{
+    display:none; background:#fdf1ee; border:1px solid #f2c9c1; color:var(--danger);
+    padding:12px 16px; border-radius:10px; margin-bottom:20px; font-size:13px;
+    align-items:center; justify-content:space-between; gap:12px;
+  }
+  a.file-link{ color:var(--accent); text-decoration:none; }
+  a.file-link:hover{ text-decoration:underline; }
 </style>
 </head>
 <body>
 
-  <div class="card" id="login-view">
-    <div class="brand">imfuyoteam</div>
-    <h1>Sign in</h1>
-    <p class="sub">Continue with your Google account to open your dashboard.</p>
-    <button id="google-btn">
-      <svg viewBox="0 0 48 48">
-        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.6 6 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.4-.4-3.5z"/>
-        <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.6 6 29.6 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
-        <path fill="#4CAF50" d="M24 44c5.5 0 10.4-1.9 14.1-5.1l-6.5-5.4C29.4 35.4 26.8 36 24 36c-5.3 0-9.7-3.4-11.3-8.1l-6.6 5.1C9.6 39.6 16.2 44 24 44z"/>
-        <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4 5.5l6.5 5.4C41.5 35.9 44 30.4 44 24c0-1.2-.1-2.4-.4-3.5z"/>
-      </svg>
-      Sign in with Google
-    </button>
-    <div id="error-msg"></div>
+  <!-- LOGIN -->
+  <div id="login-view">
+    <div class="login-card">
+      <div class="brand">imfuyoteam</div>
+      <h1>Connect your workspace</h1>
+      <p>Sign in with Google to bring your Gmail, Drive, Sheets, and Calendar into one dashboard.</p>
+      <button id="google-btn">
+        <svg viewBox="0 0 48 48">
+          <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.6 6 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.4-.4-3.5z"/>
+          <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.6 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.6 6 29.6 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
+          <path fill="#4CAF50" d="M24 44c5.5 0 10.4-1.9 14.1-5.1l-6.5-5.4C29.4 35.4 26.8 36 24 36c-5.3 0-9.7-3.4-11.3-8.1l-6.6 5.1C9.6 39.6 16.2 44 24 44z"/>
+          <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4 5.5l6.5 5.4C41.5 35.9 44 30.4 44 24c0-1.2-.1-2.4-.4-3.5z"/>
+        </svg>
+        Sign in with Google
+      </button>
+      <div class="scope-note">Requests full access to send/manage email, create files in Drive, edit Sheets, and manage Calendar events. You can review or revoke this anytime in your Google Account permissions.</div>
+      <div id="error-msg"></div>
+    </div>
   </div>
 
-  <div class="card" id="dashboard-view">
-    <img id="user-photo" class="avatar" src="" alt="" />
-    <p class="greeting">Hello, <span id="user-name"></span></p>
-    <p class="email" id="user-email"></p>
-    <button id="signout-btn">Sign out</button>
+  <!-- APP -->
+  <div id="app-view">
+    <div class="shell">
+      <nav class="sidebar">
+        <div class="brand">imfuyoteam</div>
+        <div class="user-chip">
+          <img id="user-photo" src="" alt="" />
+          <div>
+            <div class="name" id="user-name"></div>
+            <div class="email" id="user-email"></div>
+          </div>
+        </div>
+        <button class="nav-btn active" data-panel="overview">Overview</button>
+        <button class="nav-btn" data-panel="gmail">Gmail</button>
+        <button class="nav-btn" data-panel="drive">Drive</button>
+        <button class="nav-btn" data-panel="sheets">Sheets</button>
+        <button class="nav-btn" data-panel="calendar">Calendar</button>
+        <div class="sidebar-footer">
+          <button id="signout-btn">Sign out</button>
+        </div>
+      </nav>
+
+      <main class="content">
+        <div class="token-banner" id="token-banner">
+          <span>Google session expired — reconnect to keep using Gmail/Drive/Sheets/Calendar.</span>
+          <button class="btn btn-secondary" id="reconnect-btn">Reconnect Google</button>
+        </div>
+
+        <!-- OVERVIEW -->
+        <section class="panel active" id="panel-overview">
+          <div class="panel-header"><div><h2>Hello, <span id="overview-name"></span></h2><div class="sub">Here's your connected workspace.</div></div></div>
+          <div class="card"><h3>Connected scopes</h3>
+            <div class="list-item"><div class="title">Gmail — read, send, organize</div></div>
+            <div class="list-item"><div class="title">Drive — files created by this app</div></div>
+            <div class="list-item"><div class="title">Sheets — full read/write</div></div>
+            <div class="list-item"><div class="title">Calendar — full read/write</div></div>
+          </div>
+        </section>
+
+        <!-- GMAIL -->
+        <section class="panel" id="panel-gmail">
+          <div class="panel-header"><div><h2>Gmail</h2><div class="sub">Recent messages and quick send.</div></div>
+            <button class="btn btn-secondary" id="gmail-refresh">Refresh</button></div>
+          <div class="card">
+            <h3>Send an email</h3>
+            <div class="row"><input id="gmail-to" placeholder="To (email address)" /></div>
+            <div class="row"><input id="gmail-subject" placeholder="Subject" /></div>
+            <div class="row"><textarea id="gmail-body" placeholder="Message"></textarea></div>
+            <button class="btn btn-primary" id="gmail-send">Send</button>
+            <div class="status-msg" id="gmail-send-status"></div>
+          </div>
+          <div class="card"><h3>Inbox (latest 10)</h3><div id="gmail-list"><div class="empty">Loading…</div></div></div>
+        </section>
+
+        <!-- DRIVE -->
+        <section class="panel" id="panel-drive">
+          <div class="panel-header"><div><h2>Drive</h2><div class="sub">Files this app has created.</div></div>
+            <button class="btn btn-secondary" id="drive-refresh">Refresh</button></div>
+          <div class="card">
+            <h3>Create a file</h3>
+            <div class="row"><input id="drive-filename" placeholder="File name" /></div>
+            <div class="row"><textarea id="drive-content" placeholder="Text content"></textarea></div>
+            <button class="btn btn-primary" id="drive-create">Create in Drive</button>
+            <div class="status-msg" id="drive-create-status"></div>
+          </div>
+          <div class="card"><h3>Your files</h3><div id="drive-list"><div class="empty">Loading…</div></div></div>
+        </section>
+
+        <!-- SHEETS -->
+        <section class="panel" id="panel-sheets">
+          <div class="panel-header"><div><h2>Sheets</h2><div class="sub">Create and edit spreadsheets.</div></div></div>
+          <div class="card">
+            <h3>Create a spreadsheet</h3>
+            <div class="row"><input id="sheet-title" placeholder="Spreadsheet title" /></div>
+            <button class="btn btn-primary" id="sheet-create">Create</button>
+            <div class="status-msg" id="sheet-create-status"></div>
+          </div>
+          <div class="card">
+            <h3>Write to a spreadsheet</h3>
+            <div class="row"><input id="sheet-id" placeholder="Spreadsheet ID (from URL or created above)" /></div>
+            <div class="row"><input id="sheet-range" placeholder="Range, e.g. Sheet1!A1" /></div>
+            <div class="row"><input id="sheet-values" placeholder="Comma-separated values, e.g. Name,Age,City" /></div>
+            <button class="btn btn-primary" id="sheet-write">Write row</button>
+            <div class="status-msg" id="sheet-write-status"></div>
+          </div>
+          <div class="card">
+            <h3>Read a range</h3>
+            <div class="row"><input id="sheet-read-id" placeholder="Spreadsheet ID" /></div>
+            <div class="row"><input id="sheet-read-range" placeholder="Range, e.g. Sheet1!A1:D10" /></div>
+            <button class="btn btn-secondary" id="sheet-read">Read</button>
+            <div id="sheet-read-output" style="margin-top:12px;"></div>
+          </div>
+        </section>
+
+        <!-- CALENDAR -->
+        <section class="panel" id="panel-calendar">
+          <div class="panel-header"><div><h2>Calendar</h2><div class="sub">Upcoming events and quick scheduling.</div></div>
+            <button class="btn btn-secondary" id="cal-refresh">Refresh</button></div>
+          <div class="card">
+            <h3>Create an event</h3>
+            <div class="row"><input id="cal-title" placeholder="Event title" /></div>
+            <div class="row">
+              <input id="cal-start" type="datetime-local" />
+              <input id="cal-end" type="datetime-local" />
+            </div>
+            <button class="btn btn-primary" id="cal-create">Add to calendar</button>
+            <div class="status-msg" id="cal-create-status"></div>
+          </div>
+          <div class="card"><h3>Upcoming events</h3><div id="cal-list"><div class="empty">Loading…</div></div></div>
+        </section>
+      </main>
+    </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-    import {
-      getAuth,
-      GoogleAuthProvider,
-      signInWithPopup,
-      signOut,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+  import {
+    getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCHlIsEzBKlOr_kNDwJN4mcmcC7a2U0Q6Q",
-      authDomain: "imfuyoteam.firebaseapp.com",
-      projectId: "imfuyoteam",
-      storageBucket: "imfuyoteam.firebasestorage.app",
-      messagingSenderId: "192603437552",
-      appId: "1:192603437552:web:540e9a71f405f30f4a0535",
-      measurementId: "G-S7X1ZN8L48"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyCHlIsEzBKlOr_kNDwJN4mcmcC7a2U0Q6Q",
+    authDomain: "imfuyoteam.firebaseapp.com",
+    projectId: "imfuyoteam",
+    storageBucket: "imfuyoteam.firebasestorage.app",
+    messagingSenderId: "192603437552",
+    appId: "1:192603437552:web:540e9a71f405f30f4a0535",
+    measurementId: "G-S7X1ZN8L48"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const SCOPES = [
+    "https://www.googleapis.com/auth/gmail.modify",
+    "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/calendar"
+  ];
+
+  function buildProvider(){
     const provider = new GoogleAuthProvider();
+    SCOPES.forEach(s => provider.addScope(s));
+    provider.setCustomParameters({ prompt: "consent" });
+    return provider;
+  }
 
-    const loginView = document.getElementById("login-view");
-    const dashboardView = document.getElementById("dashboard-view");
-    const googleBtn = document.getElementById("google-btn");
-    const signoutBtn = document.getElementById("signout-btn");
-    const errorMsg = document.getElementById("error-msg");
-    const userName = document.getElementById("user-name");
-    const userEmail = document.getElementById("user-email");
-    const userPhoto = document.getElementById("user-photo");
+  let accessToken = null; // in-memory only; expires ~1hr, re-auth to refresh
 
-    googleBtn.addEventListener("click", async () => {
-      errorMsg.style.display = "none";
-      try {
-        await signInWithPopup(auth, provider);
-      } catch (err) {
-        console.error(err);
-        errorMsg.textContent = "Sign-in failed: " + err.message;
-        errorMsg.style.display = "block";
-      }
+  // ---------- DOM refs ----------
+  const loginView = document.getElementById("login-view");
+  const appView = document.getElementById("app-view");
+  const googleBtn = document.getElementById("google-btn");
+  const errorMsg = document.getElementById("error-msg");
+  const signoutBtn = document.getElementById("signout-btn");
+  const reconnectBtn = document.getElementById("reconnect-btn");
+  const tokenBanner = document.getElementById("token-banner");
+
+  async function doSignIn(){
+    errorMsg.style.display = "none";
+    try{
+      const result = await signInWithPopup(auth, buildProvider());
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      accessToken = credential.accessToken;
+      tokenBanner.style.display = "none";
+      loadAllPanels();
+    }catch(err){
+      console.error(err);
+      errorMsg.textContent = "Sign-in failed: " + err.message;
+      errorMsg.style.display = "block";
+    }
+  }
+
+  googleBtn.addEventListener("click", doSignIn);
+  reconnectBtn.addEventListener("click", doSignIn);
+  signoutBtn.addEventListener("click", () => { accessToken = null; signOut(auth); });
+
+  onAuthStateChanged(auth, (user) => {
+    if(user){
+      loginView.style.display = "none";
+      appView.style.display = "block";
+      document.getElementById("user-name").textContent = user.displayName || "there";
+      document.getElementById("overview-name").textContent = (user.displayName || "there").split(" ")[0];
+      document.getElementById("user-email").textContent = user.email || "";
+      document.getElementById("user-photo").src = user.photoURL || "";
+      if(accessToken) loadAllPanels();
+    }else{
+      loginView.style.display = "flex";
+      appView.style.display = "none";
+      accessToken = null;
+    }
+  });
+
+  // ---------- nav ----------
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("panel-" + btn.dataset.panel).classList.add("active");
     });
+  });
 
-    signoutBtn.addEventListener("click", () => signOut(auth));
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        loginView.classList.add("hidden");
-        dashboardView.style.display = "block";
-        userName.textContent = user.displayName || "there";
-        userEmail.textContent = user.email || "";
-        userPhoto.src = user.photoURL || "";
-      } else {
-        loginView.classList.remove("hidden");
-        dashboardView.style.display = "none";
-      }
+  // ---------- helper: authed fetch to Google APIs ----------
+  async function gfetch(url, options = {}){
+    if(!accessToken){ tokenBanner.style.display = "flex"; throw new Error("No access token"); }
+    const res = await fetch(url, {
+      ...options,
+      headers: { ...(options.headers || {}), Authorization: `Bearer ${accessToken}` }
     });
-  </script>
+    if(res.status === 401){
+      tokenBanner.style.display = "flex";
+      throw new Error("Google session expired");
+    }
+    if(!res.ok){
+      const errBody = await res.text();
+      throw new Error(`API error ${res.status}: ${errBody}`);
+    }
+    return res.status === 204 ? null : res.json();
+  }
 
+  function showStatus(el, message, ok){
+    el.textContent = message;
+    el.className = "status-msg " + (ok ? "ok" : "err");
+    el.style.display = "block";
+  }
+
+  function loadAllPanels(){
+    loadGmail(); loadDrive(); loadCalendar();
+  }
+
+  // ================= GMAIL =================
+  async function loadGmail(){
+    const list = document.getElementById("gmail-list");
+    list.innerHTML = `<div class="empty">Loading…</div>`;
+    try{
+      const data = await gfetch("https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=10");
+      const ids = (data.messages || []).map(m => m.id);
+      if(ids.length === 0){ list.innerHTML = `<div class="empty">No messages found.</div>`; return; }
+      const details = await Promise.all(ids.map(id =>
+        gfetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=Subject&metadataHeaders=From`)
+      ));
+      list.innerHTML = details.map(msg => {
+        const headers = msg.payload?.headers || [];
+        const subject = headers.find(h => h.name === "Subject")?.value || "(no subject)";
+        const from = headers.find(h => h.name === "From")?.value || "";
+        return `<div class="list-item"><div class="title">${escapeHtml(subject)}</div>
+          <div class="meta">${escapeHtml(from)} · ${escapeHtml(msg.snippet || "")}</div></div>`;
+      }).join("");
+    }catch(err){
+      console.error(err);
+      list.innerHTML = `<div class="empty">Couldn't load inbox — ${escapeHtml(err.message)}</div>`;
+    }
+  }
+  document.getElementById("gmail-refresh").addEventListener("click", loadGmail);
+
+  document.getElementById("gmail-send").addEventListener("click", async () => {
+    const statusEl = document.getElementById("gmail-send-status");
+    const to = document.getElementById("gmail-to").value.trim();
+    const subject = document.getElementById("gmail-subject").value.trim();
+    const body = document.getElementById("gmail-body").value;
+    if(!to || !subject){ showStatus(statusEl, "To and subject are required.", false); return; }
+    const mime = [`To: ${to}`, `Subject: ${subject}`, "Content-Type: text/plain; charset=utf-8", "", body].join("\r\n");
+    const raw = base64UrlEncode(mime);
+    try{
+      await gfetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ raw })
+      });
+      showStatus(statusEl, "Sent.", true);
+      document.getElementById("gmail-to").value = "";
+      document.getElementById("gmail-subject").value = "";
+      document.getElementById("gmail-body").value = "";
+      loadGmail();
+    }catch(err){
+      showStatus(statusEl, "Failed to send: " + err.message, false);
+    }
+  });
+
+  function base64UrlEncode(str){
+    const bytes = new TextEncoder().encode(str);
+    let binary = "";
+    bytes.forEach(b => binary += String.fromCharCode(b));
+    return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+
+  // ================= DRIVE =================
+  async function loadDrive(){
+    const list = document.getElementById("drive-list");
+    list.innerHTML = `<div class="empty">Loading…</div>`;
+    try{
+      const data = await gfetch("https://www.googleapis.com/drive/v3/files?fields=files(id,name,mimeType,webViewLink,modifiedTime)&orderBy=modifiedTime desc&pageSize=20");
+      const files = data.files || [];
+      if(files.length === 0){ list.innerHTML = `<div class="empty">No files yet — create one above.</div>`; return; }
+      list.innerHTML = files.map(f => `<div class="list-item">
+          <div class="title"><a class="file-link" href="${f.webViewLink}" target="_blank" rel="noopener">${escapeHtml(f.name)}</a></div>
+          <div class="meta">${escapeHtml(f.mimeType)} · modified ${new Date(f.modifiedTime).toLocaleString()}</div>
+        </div>`).join("");
+    }catch(err){
+      console.error(err);
+      list.innerHTML = `<div class="empty">Couldn't load files — ${escapeHtml(err.message)}</div>`;
+    }
+  }
+  document.getElementById("drive-refresh").addEventListener("click", loadDrive);
+
+  document.getElementById("drive-create").addEventListener("click", async () => {
+    const statusEl = document.getElementById("drive-create-status");
+    const name = document.getElementById("drive-filename").value.trim() || "Untitled";
+    const content = document.getElementById("drive-content").value;
+    const boundary = "workos_boundary_" + Date.now();
+    const metadata = { name, mimeType: "text/plain" };
+    const body =
+      `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n` +
+      `--${boundary}\r\nContent-Type: text/plain\r\n\r\n${content}\r\n--${boundary}--`;
+    try{
+      await gfetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
+        method: "POST",
+        headers: { "Content-Type": `multipart/related; boundary=${boundary}` },
+        body
+      });
+      showStatus(statusEl, "File created.", true);
+      document.getElementById("drive-filename").value = "";
+      document.getElementById("drive-content").value = "";
+      loadDrive();
+    }catch(err){
+      showStatus(statusEl, "Failed to create file: " + err.message, false);
+    }
+  });
+
+  // ================= SHEETS =================
+  document.getElementById("sheet-create").addEventListener("click", async () => {
+    const statusEl = document.getElementById("sheet-create-status");
+    const title = document.getElementById("sheet-title").value.trim() || "Untitled spreadsheet";
+    try{
+      const data = await gfetch("https://sheets.googleapis.com/v4/spreadsheets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ properties: { title } })
+      });
+      showStatus(statusEl, `Created: ${data.spreadsheetUrl}`, true);
+      document.getElementById("sheet-title").value = "";
+    }catch(err){
+      showStatus(statusEl, "Failed to create: " + err.message, false);
+    }
+  });
+
+  document.getElementById("sheet-write").addEventListener("click", async () => {
+    const statusEl = document.getElementById("sheet-write-status");
+    const id = document.getElementById("sheet-id").value.trim();
+    const range = document.getElementById("sheet-range").value.trim();
+    const values = document.getElementById("sheet-values").value.split(",").map(v => v.trim());
+    if(!id || !range){ showStatus(statusEl, "Spreadsheet ID and range are required.", false); return; }
+    try{
+      await gfetch(`https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ values: [values] })
+      });
+      showStatus(statusEl, "Row written.", true);
+    }catch(err){
+      showStatus(statusEl, "Failed to write: " + err.message, false);
+    }
+  });
+
+  document.getElementById("sheet-read").addEventListener("click", async () => {
+    const output = document.getElementById("sheet-read-output");
+    const id = document.getElementById("sheet-read-id").value.trim();
+    const range = document.getElementById("sheet-read-range").value.trim();
+    if(!id || !range){ output.innerHTML = `<div class="empty">Enter a spreadsheet ID and range.</div>`; return; }
+    output.innerHTML = `<div class="empty">Loading…</div>`;
+    try{
+      const data = await gfetch(`https://sheets.googleapis.com/v4/spreadsheets/${id}/values/${encodeURIComponent(range)}`);
+      const rows = data.values || [];
+      if(rows.length === 0){ output.innerHTML = `<div class="empty">No data in that range.</div>`; return; }
+      output.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:13px;">` +
+        rows.map(r => `<tr>${r.map(c => `<td style="border:1px solid var(--border);padding:6px 8px;">${escapeHtml(String(c))}</td>`).join("")}</tr>`).join("") +
+        `</table>`;
+    }catch(err){
+      output.innerHTML = `<div class="empty">Couldn't read range — ${escapeHtml(err.message)}</div>`;
+    }
+  });
+
+  // ================= CALENDAR =================
+  async function loadCalendar(){
+    const list = document.getElementById("cal-list");
+    list.innerHTML = `<div class="empty">Loading…</div>`;
+    try{
+      const timeMin = new Date().toISOString();
+      const data = await gfetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${encodeURIComponent(timeMin)}&maxResults=10&singleEvents=true&orderBy=startTime`);
+      const events = data.items || [];
+      if(events.length === 0){ list.innerHTML = `<div class="empty">No upcoming events.</div>`; return; }
+      list.innerHTML = events.map(ev => {
+        const start = ev.start?.dateTime || ev.start?.date;
+        return `<div class="list-item"><div class="title">${escapeHtml(ev.summary || "(untitled)")}</div>
+          <div class="meta">${new Date(start).toLocaleString()}</div></div>`;
+      }).join("");
+    }catch(err){
+      console.error(err);
+      list.innerHTML = `<div class="empty">Couldn't load events — ${escapeHtml(err.message)}</div>`;
+    }
+  }
+  document.getElementById("cal-refresh").addEventListener("click", loadCalendar);
+
+  document.getElementById("cal-create").addEventListener("click", async () => {
+    const statusEl = document.getElementById("cal-create-status");
+    const summary = document.getElementById("cal-title").value.trim();
+    const start = document.getElementById("cal-start").value;
+    const end = document.getElementById("cal-end").value;
+    if(!summary || !start || !end){ showStatus(statusEl, "Title, start, and end are required.", false); return; }
+    try{
+      await gfetch("https://www.googleapis.com/calendar/v3/calendars/primary/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          summary,
+          start: { dateTime: new Date(start).toISOString() },
+          end: { dateTime: new Date(end).toISOString() }
+        })
+      });
+      showStatus(statusEl, "Event created.", true);
+      document.getElementById("cal-title").value = "";
+      document.getElementById("cal-start").value = "";
+      document.getElementById("cal-end").value = "";
+      loadCalendar();
+    }catch(err){
+      showStatus(statusEl, "Failed to create event: " + err.message, false);
+    }
+  });
+
+  // ---------- utils ----------
+  function escapeHtml(str){
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+</script>
 </body>
 </html>
